@@ -58,7 +58,7 @@ contract DSCEngine is ReentrancyGuard {
     error DSCEngine__NeedsMoreThanZero();
     error DSCEngine__TokenAddressesAndPriceFeedAddressesMustBeSameLength();
     error DSCEngine__NotAllowedToken();
-    error DSCEngine__TransferFailed()
+    error DSCEngine__TransferFailed();
 
     /* ------------------------------------------------------------------
     #                         STATE VARIABLES
