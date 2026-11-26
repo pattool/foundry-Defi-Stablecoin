@@ -25,6 +25,9 @@
 
 pragma solidity ^0.8.20;
 
+/* ------------------------------------------------------------------
+#                             IMPORTS
+# ------------------------------------------------------------------*/
 import {DecentralizedStableCoin} from "./DecentralizedStableCoin.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
@@ -47,15 +50,31 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
  * @notice This contract is VERY loosely based on the MakerDAO DSS (DAI) system.
  */
 
-contract DSCEngine {
+contract DSCEngine is ReentrancyGuard {
+    /* ------------------------------------------------------------------
+    #                              ERRORS
+    # ------------------------------------------------------------------*/
     error DSCEngine__NeedsMoreThanZero();
     error DSCEngine__TokenAddressesAndPriceFeedAddressesMustBeSameLength();
     error DSCEngine__NotAllowedToken();
 
+    /* ------------------------------------------------------------------
+    #                         STATE VARIABLES
+    # ------------------------------------------------------------------*/
     mapping(address token => address priceFeed) private s_priceFeeds;
 
+    /*------------------------------------------------------------------
+    #                            IMMUTABLES
+    # ------------------------------------------------------------------*/
     DecentralizedStableCoin private immutable i_dsc;
 
+    /*# ------------------------------------------------------------------
+    #                              EVENTS
+    # ------------------------------------------------------------------*/
+
+    /* ------------------------------------------------------------------
+    #                            MODIFIERS
+    # ------------------------------------------------------------------*/
     modifier moreThanZero(uint256 amount) {
         if (amount == 0) {
             revert DSCEngine__NeedsMoreThanZero();
@@ -70,6 +89,9 @@ contract DSCEngine {
         _;
     }
 
+    /*------------------------------------------------------------------
+    #                           CONSTRUCTOR
+    # ------------------------------------------------------------------*/
     constructor(address[] memory tokenAddresses, address[] memory priceFeedAddresses, address dscAddress) {
         if (tokenAddresses.length != priceFeedAddresses.length) {
             revert DSCEngine__TokenAddressesAndPriceFeedAddressesMustBeSameLength();
@@ -81,6 +103,9 @@ contract DSCEngine {
         i_dsc = DecentralizedStableCoin(dscAddress);
     }
 
+    /*------------------------------------------------------------------
+    #                        EXTERNAL FUNCTIONS
+    # ------------------------------------------------------------------*/
     function depositCollateralAndMintDsc() external {}
 
     /*
@@ -91,8 +116,7 @@ contract DSCEngine {
         external
         moreThanZero(amountCollateral)
         isAllowedToken(tokenCollateralAddress)
-        //nonReentrant
-
+        nonReentrant
     {}
 
     function redeemCollateralForDsc() external {}
@@ -105,6 +129,13 @@ contract DSCEngine {
 
     function liquidate() external {}
 
+    /*------------------------------------------------------------------
+    #                     INTERNAL VIEW FUNCTIONS
+    # ------------------------------------------------------------------*/
+
+    /*------------------------------------------------------------------
+    #                     EXTERNAL VIEW FUNCTIONS
+    # ------------------------------------------------------------------*/
     function getHealthFactor() external view {}
 }
 
